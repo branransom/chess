@@ -56,44 +56,54 @@ pub enum PieceName {
     Empty,
 }
 
-impl PieceName {}
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct Tile {
+    occupant: Piece,
+}
+
+impl Tile {
+    pub fn new(occupant: Piece) -> Tile {
+        Tile { occupant }
+    }
+}
 
 pub struct Board {
-    board: [[Piece; 8]; 8],
+    board: [[Tile; 8]; 8],
     to_move: PieceColor,
 }
 
 impl Board {
     pub fn new() -> Board {
-        let mut b = [[Piece::create(PieceName::Empty, PieceColor::White); 8]; 8];
+        // 64 tiles
+        let mut b = [[Tile::new(Piece::create(PieceName::Empty, PieceColor::White)); 8]; 8];
 
         // White pieces
-        b[0][0] = Piece::create(PieceName::Rook, PieceColor::White);
-        b[0][1] = Piece::create(PieceName::Knight, PieceColor::White);
-        b[0][2] = Piece::create(PieceName::Bishop, PieceColor::White);
-        b[0][3] = Piece::create(PieceName::Queen, PieceColor::White);
-        b[0][4] = Piece::create(PieceName::King, PieceColor::White);
-        b[0][5] = Piece::create(PieceName::Bishop, PieceColor::White);
-        b[0][6] = Piece::create(PieceName::Knight, PieceColor::White);
-        b[0][7] = Piece::create(PieceName::Rook, PieceColor::White);
+        b[0][0] = Tile::new(Piece::create(PieceName::Rook, PieceColor::White));
+        b[0][1] = Tile::new(Piece::create(PieceName::Knight, PieceColor::White));
+        b[0][2] = Tile::new(Piece::create(PieceName::Bishop, PieceColor::White));
+        b[0][3] = Tile::new(Piece::create(PieceName::Queen, PieceColor::White));
+        b[0][4] = Tile::new(Piece::create(PieceName::King, PieceColor::White));
+        b[0][5] = Tile::new(Piece::create(PieceName::Bishop, PieceColor::White));
+        b[0][6] = Tile::new(Piece::create(PieceName::Knight, PieceColor::White));
+        b[0][7] = Tile::new(Piece::create(PieceName::Rook, PieceColor::White));
 
         for i in 0..8 {
-            b[1][i] = Piece::create(PieceName::Pawn, PieceColor::White);
+            b[1][i] = Tile::new(Piece::create(PieceName::Pawn, PieceColor::White));
         }
 
         // Black pieces
         for i in 0..8 {
-            b[6][i] = Piece::create(PieceName::Pawn, PieceColor::Black);
+            b[6][i] = Tile::new(Piece::create(PieceName::Pawn, PieceColor::Black));
         }
 
-        b[7][0] = Piece::create(PieceName::Rook, PieceColor::Black);
-        b[7][1] = Piece::create(PieceName::Knight, PieceColor::Black);
-        b[7][2] = Piece::create(PieceName::Bishop, PieceColor::Black);
-        b[7][3] = Piece::create(PieceName::Queen, PieceColor::Black);
-        b[7][4] = Piece::create(PieceName::King, PieceColor::Black);
-        b[7][5] = Piece::create(PieceName::Bishop, PieceColor::Black);
-        b[7][6] = Piece::create(PieceName::Knight, PieceColor::Black);
-        b[7][7] = Piece::create(PieceName::Rook, PieceColor::Black);
+        b[7][0] = Tile::new(Piece::create(PieceName::Rook, PieceColor::Black));
+        b[7][1] = Tile::new(Piece::create(PieceName::Knight, PieceColor::Black));
+        b[7][2] = Tile::new(Piece::create(PieceName::Bishop, PieceColor::Black));
+        b[7][3] = Tile::new(Piece::create(PieceName::Queen, PieceColor::Black));
+        b[7][4] = Tile::new(Piece::create(PieceName::King, PieceColor::Black));
+        b[7][5] = Tile::new(Piece::create(PieceName::Bishop, PieceColor::Black));
+        b[7][6] = Tile::new(Piece::create(PieceName::Knight, PieceColor::Black));
+        b[7][7] = Tile::new(Piece::create(PieceName::Rook, PieceColor::Black));
 
         return Board {
             board: b,
@@ -108,20 +118,16 @@ impl Board {
         let to_rank: usize = (to / 8).try_into().unwrap();
         let to_file: usize = (to % 8).try_into().unwrap();
 
-        println!("from_rank {}", from_rank);
-        println!("from_file {}", from_file);
-        println!("to_rank {}", to_rank);
-        println!("to_file {}", to_file);
-
         self.board[to_rank][to_file] = self.board[from_rank][from_file];
-        self.board[from_rank][from_file] = Piece::create(PieceName::Empty, PieceColor::White);
+        self.board[from_rank][from_file] =
+            Tile::new(Piece::create(PieceName::Empty, PieceColor::White));
         self.to_move = self.to_move.opponent();
     }
 
     pub fn print(&self) {
         for i in (0..8).rev() {
             for j in 0..8 {
-                let piece = match self.board[i][j] {
+                let piece = match self.board[i][j].occupant {
                     Piece {
                         name: PieceName::Pawn,
                         color: PieceColor::Black,
