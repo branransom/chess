@@ -13,6 +13,7 @@ fn chess_logo() -> &'static str {
 fn main() {
     println!("{}", chess_logo());
 
-    let my_board = board::Board::new();
+    let mut my_board = board::Board::new();
+    my_board.move_piece(1, 17);
     my_board.print();
 }

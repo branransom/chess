@@ -1,3 +1,5 @@
+use std::convert::TryInto;
+
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Piece {
     pub color: PieceColor,
@@ -34,7 +36,14 @@ pub enum PieceColor {
     White,
 }
 
-impl PieceColor {}
+impl PieceColor {
+    pub fn opponent(&self) -> PieceColor {
+        match self {
+            PieceColor::White => PieceColor::Black,
+            PieceColor::Black => PieceColor::White,
+        }
+    }
+}
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub enum PieceName {
@@ -92,57 +101,74 @@ impl Board {
         };
     }
 
+    // TODO: Convert u64 into tiles
+    pub fn move_piece(&mut self, from: u8, to: u8) {
+        let from_rank: usize = (from / 8).try_into().unwrap();
+        let from_file: usize = (from % 8).try_into().unwrap();
+        let to_rank: usize = (to / 8).try_into().unwrap();
+        let to_file: usize = (to % 8).try_into().unwrap();
+
+        println!("from_rank {}", from_rank);
+        println!("from_file {}", from_file);
+        println!("to_rank {}", to_rank);
+        println!("to_file {}", to_file);
+
+        self.board[to_rank][to_file] = self.board[from_rank][from_file];
+        self.board[from_rank][from_file] = Piece::create(PieceName::Empty, PieceColor::White);
+        self.to_move = self.to_move.opponent();
+    }
+
     pub fn print(&self) {
-        for i in 0..8 {
+        for i in (0..8).rev() {
             for j in 0..8 {
                 let piece = match self.board[i][j] {
                     Piece {
                         name: PieceName::Pawn,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♙",
                     Piece {
                         name: PieceName::Knight,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♘",
                     Piece {
                         name: PieceName::Bishop,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♗",
                     Piece {
                         name: PieceName::Rook,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♖",
                     Piece {
                         name: PieceName::Queen,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♕",
                     Piece {
                         name: PieceName::King,
-                        color: PieceColor::White,
+                        color: PieceColor::Black,
                     } => "♔",
                     Piece {
                         name: PieceName::Pawn,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♟︎",
                     Piece {
                         name: PieceName::Knight,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♞",
                     Piece {
                         name: PieceName::Bishop,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♝",
                     Piece {
                         name: PieceName::Rook,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♜",
                     Piece {
                         name: PieceName::Queen,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♛",
                     Piece {
                         name: PieceName::King,
-                        color: PieceColor::Black,
+                        color: PieceColor::White,
                     } => "♚",
                     _ => ".",
                 };
